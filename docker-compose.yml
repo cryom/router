@@ -1,0 +1,33 @@
+version: "2"
+networks:
+  default:
+services:
+  codeclimate:
+    image: codeclimate/codeclimate
+    volumes:
+      - .:/code
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/cc:/tmp/cc
+  coverage:
+    build:
+      ./docker/coverage
+    volumes:
+      - ./:/app
+      - ~/.ssh:/root/.ssh
+    environment:
+      CODECLIMATE_REPO_TOKEN: f759558562762398c32879d47ef81bf3ac597cb09e36b1b57685cf2b68264479
+    command: [--coverage-report, ./build/logs/clover.xml]
+
+  composer:
+    build: ./docker/composer
+    volumes:
+      - ./:/app
+      - ~/.ssh:/root/.ssh
+
+  phpunit:
+    build: ./docker/phpunit
+    volumes:
+      - ./:/app
+    environment:
+      XDEBUG_CONFIG: remote_host=192.168.100.2
+      PHP_IDE_CONFIG: serverName=xdebug
