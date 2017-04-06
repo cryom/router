@@ -6,10 +6,10 @@
  * Time: 14:16
  */
 
-namespace vivace\router\Rule;
+namespace vivace\router\Rule\Method;
 
 
-class Get extends Method
+class Get extends Equal
 {
     public function __construct()
     {

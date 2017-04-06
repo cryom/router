@@ -3,65 +3,63 @@
 
 namespace vivace\router\Rule;
 
+use vivace\router\Rule\Method\Equal;
 
-use Psr\Http\Message\ServerRequestInterface;
-use vivace\router\Exception\NotApplied;
-use vivace\router\Rule\Path\Equal;
-use vivace\router\Rule\Path\Match;
-
-class Builder extends AllOf
+/**
+ * Class Builder
+ * @package vivace\router\Rule
+ * @property \vivace\router\Rule\Builder\Host $host
+ * @property \vivace\router\Rule\Builder\Path $path
+ */
+class Builder
 {
-    private $path;
+    private const SUB = [
+        'host' => Builder\Host::class,
+        'path' => Builder\Path::class,
+    ];
+    /** @var  Method */
     private $method;
     private $host;
+    private $path;
 
-    public function path(string $path): Builder
+    public function method(string ...$methods)
     {
-        $this->path = [Equal::class, $path];
-        return $this;
-    }
-
-    public function match(string $expression): Builder
-    {
-        $this->path = [Match::class, $expression];
-        return $this;
-    }
-
-    public function method(string ...$method): Builder
-    {
-        $this->method = $method;
-        return $this;
-    }
-
-    public function host(string $host): Builder
-    {
-        $this->host = $host;
-        return $this;
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     * @return ServerRequestInterface
-     * @throws NotApplied
-     */
-    public function apply(ServerRequestInterface $request): ServerRequestInterface
-    {
-        $this->rules = [];
-        if ($this->host) {
-            $this->rules[] = new Host($this->host);
-        }
-        if ($this->method) {
-            $methods = [];
-            foreach ($this->method as $item) {
-                $methods[] = new Method($item);
+        if (count($methods) > 1) {
+            $rules = [];
+            foreach ($methods as $method) {
+                $rules[] = new Equal($method);
             }
-            $this->rules[] = new OneOf(...$methods);
+            $rule = new OneOf(...$rules);
+        } else {
+            $rule = new Equal($methods[0]);
         }
-        if ($this->path) {
-            [$className, $value] = $this->path;
-            $this->rules[] = new $className($value);
+        if (!$this->method) {
+            $this->method = $rule;
+        } elseif ($this->method instanceof OneOf) {
+            if ($rule instanceof OneOf) {
+                $this->method->merge($rule);
+            } else {
+                $this->method->append($rule);
+            }
         }
-        return parent::apply($request);
+    }
 
+    public function __get($name)
+    {
+        switch ($name) {
+            case 'host':
+                if (!$this->host) {
+                    $this->host = new Builder\Host();
+                }
+                return $this->host;
+                break;
+            case 'path':
+                if (!$this->path) {
+                    $this->path = new Builder\Path();
+                }
+                return $this->path;
+                break;
+        }
+        throw new \InvalidArgumentException("Property {$name} not exists");
     }
 }

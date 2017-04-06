@@ -20,6 +20,12 @@ class AllOf implements Rule
         $this->rules = $rules;
     }
 
+    public function append(Rule $condition): AllOf
+    {
+        $this->rules[] = $condition;
+        return $this;
+    }
+
     public function apply(ServerRequestInterface $request): ServerRequestInterface
     {
         foreach ($this->rules as $rule) {

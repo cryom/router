@@ -1,9 +1,9 @@
 <?php
 
-namespace vivace\router\Rule;
+namespace vivace\router\Rule\Method;
 
 
-class Post extends Method
+class Post extends Equal
 {
     public function __construct()
     {

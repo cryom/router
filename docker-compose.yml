@@ -29,5 +29,5 @@ services:
     volumes:
       - ./:/app
     environment:
-      XDEBUG_CONFIG: remote_host=192.168.100.2
+      XDEBUG_CONFIG: remote_host=172.17.42.1
       PHP_IDE_CONFIG: serverName=xdebug

@@ -8,28 +8,9 @@
 
 namespace vivace\router\Rule;
 
-
-use Psr\Http\Message\ServerRequestInterface;
-use vivace\router\Exception\NotApplied;
 use vivace\router\Rule;
 
-class Method implements Rule
+interface Method extends Rule
 {
-    /**
-     * @var \string[]
-     */
-    private $method;
 
-    public function __construct(string $method)
-    {
-        $this->method = $method;
-    }
-
-    public function apply(ServerRequestInterface $request): ServerRequestInterface
-    {
-        if (mb_strtoupper($request->getMethod()) !== mb_strtoupper($this->method)) {
-            throw new NotApplied("request method not equal $this->method");
-        }
-        return $request;
-    }
 }

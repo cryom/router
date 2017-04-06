@@ -20,6 +20,18 @@ class OneOf implements Rule
         $this->rules = $rules;
     }
 
+    public function append(Rule $condition): OneOf
+    {
+        $this->rules[] = $condition;
+        return $this;
+    }
+
+    public function merge(OneOf $oneOf): OneOf
+    {
+        $this->rules = array_merge($this->rules, $oneOf->rules);
+        return $this;
+    }
+
     public function apply(ServerRequestInterface $request): ServerRequestInterface
     {
         foreach ($this->rules as $rule) {
