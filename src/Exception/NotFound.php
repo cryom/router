@@ -4,7 +4,7 @@
 namespace vivace\router\Exception;
 
 
-class NotApplied extends \Exception
+class NotFound extends \Exception
 {
 
 }
